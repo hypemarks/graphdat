@@ -2,13 +2,13 @@ module Graphdat
   require 'socket'
 
    class Metric
-   		@temp = {} # used when begin and end statements are used.
-   		@context_list = []
+      @temp = {} # used when begin and end statements are used.
+      @context_list = []
       @start_time = 0
       @path 
       @msg = {}
 
-   		def initialize 
+      def initialize 
               @path = ''
               @msg = {}
               @temp = {}
@@ -21,11 +21,11 @@ module Graphdat
               @msg[:timestamp] = Time.now.to_f*1000
               @start_time = Time.now.to_f
               self.begin ''
-   		end
+      end
 
 
 
-   		def run
+      def run
               self.end ''
               @end_time = Time.now.to_f
               responsetime = @end_time - @start_time
@@ -33,7 +33,7 @@ module Graphdat
               @msg[:responsetime] = ints
               @msg[:context] = @context_list.reverse
               Graphdat::Agent.send_package @msg
-   		end
+      end
 
 
       # for adding the metrics to the context list when you have the response time
@@ -48,31 +48,31 @@ module Graphdat
       end
 
       # for instrumentation
-   	 	def begin key
+      def begin key
               if @path == '/'
                 @path = @path+"#{key}"
-         	 		else
+              else
                 @path = @path+"/#{key}"
               end
               @temp["#{key}:start"] = Time.now.to_f
               @temp["#{key}:path"] = @path
               @temp
-   	 	end
+      end
 
-   	 	def end key
+      def end key
               @context= {}
-         	 		key_start = @temp["#{key}:start"]
+              key_start = @temp["#{key}:start"]
               path = @temp["#{key}:path"]
-         	 		firsttimestampoffset = key_start - @start_time
-         	 		responsetime  = Time.now.to_f - key_start
-         	 		name = key
+              firsttimestampoffset = key_start - @start_time
+              responsetime  = Time.now.to_f - key_start
+              name = key
               @context[:callcount] = 1
               @context[:cputime] = 49.634
               @context[:firsttimestampoffset] = firsttimestampoffset*1000
               @context[:name] = path
               @context[:responsetime] = responsetime*1000
               @context_list << @context
-   	 	end
+      end
 
    end
 end
