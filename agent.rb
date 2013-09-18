@@ -2,9 +2,8 @@ module Graphdat
 	class Agent
 
 		def self.send_heartbeat
-            socket = UNIXSocket.new("/tmp/gd.agent.sock")
             data = [0,0,0,0].pack("N*")
-            socket.send data, 0
+            @socket.send data, 0
             data
         end
 
@@ -12,15 +11,23 @@ module Graphdat
             data = msg.to_msgpack
             len= data.to_s.length
             l = [len].pack('N*')
-            if @socket.nil? == true
-                @socket = UNIXSocket.new("/tmp/gd.agent.sock")
-            end
             @socket.send l, 0
-            @socket.send data, 0
-            # @socket.close
+            response = @socket.send data, 0
             msg
             rescue 
-                'Graphdat Not Installed'
+                Rails.logger.error 'Graphdat Not Installed'
+        end
+
+        def self.start
+            @socket = UNIXSocket.new("/tmp/gd.agent.sock")
+            Thread.new do 
+                while 1 do
+                    sleep 3
+                    self.send_heartbeat
+                end 
+            end
+            rescue 
+                Rails.logger.error 'Graphdat Not Installed'
         end
 	end
    

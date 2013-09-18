@@ -17,7 +17,7 @@ module Graphdat
               @msg[:type] = 'Sample'
               @msg[:host] =  Socket.gethostname
               @msg[:route] = 'GET /'
-              @msg[:cputime] = 60
+              # @msg[:cputime] = 60
               @msg[:timestamp] = Time.now.to_f*1000
               @start_time = Time.now.to_f
               self.begin ''
